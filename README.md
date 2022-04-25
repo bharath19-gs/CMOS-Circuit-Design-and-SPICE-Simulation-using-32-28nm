@@ -3,8 +3,8 @@
 
 # Table of contents
 
+- [Tool used](#Toolused)
 - [Overview](#overview)
-- [Why do we need circuit design and spice simulation?](#circuit)
 - [NMOS- Basic element in circuit design](#NMOS)
 - [Regions of operation of NMOS](#operation)
   - [Cut off region](#cut)
@@ -24,17 +24,53 @@
 
 
 
+# Tool used
+The Synopsys Custom Compiler™ design environment is a modern solution for full-custom analog, custom digital, and mixed-signal IC design. As the heart of the Synopsys Custom Design Platform, Custom Compiler provides design entry, simulation management and analysis, and custom layout editing features. It delivers industry-leading productivity, performance, and ease-of-use while remaining easy to adopt for users of legacy tools.
+
+![2](https://github.com/bharath19-gs/6T_SRAM_CELL/blob/main/6T_SRAM/custom_compiler.png)
+
+
 # Overview
 
-[VLSI system design](https://www.vlsisystemdesign.com/cmos-circuit-design-spice-simulation-using-sky130-technology) workshop on circuit design and spice simulation is base on the open source tool ngspice and Google/Skywater 130nm PDK. The use of the open source tools and pdk is advantegeous for the learner with  respect to usage of these tools after the workshop. [VLSI system design](https://www.vlsisystemdesign.com/cmos-circuit-design-spice-simulation-using-sky130-technology) workshop focusses on both theoretical as well as lab based learning. Starting form the concepts of basic element in cicuit design NMOS, its characteristics curve IDVgs, IDVds, its regions of operation - drain current equation, threshold voltage equation, effect of long channel and short channel device (velocity saturation)on the behavioral characteristic of NMOS. Spice scripting and simulation of the learned concept gives a more practical analysis of its characteritics. CMOS inverter circuits its design consideration is learned and simulated including its voltage transfer characteristics, static behaviour evaluation defining its robustness based on the 4 parameters viz switching threshold voltage (Vm), noise magin, power supply variation and device variation. Also the dynamic characteristics – propagation delay of the CMOS is learned and simulated. The importance of the transistor sizes while designing a CMOS inverter for a particular application is seen. All the above design consideration assist in finding the delay table and noise margin for different transistor sizes which can be compared with the actual values provided by the particular pdk. This workshop gives a detail understanding on the basic building block of the VLSI design – CMOS.
+we will be Starting form the concepts of basic element in cicuit design NMOS, its characteristics curve IDVgs, IDVds, its regions of operation - drain current equation, threshold voltage equation, effect of long channel and short channel device (velocity saturation)on the behavioral characteristic of NMOS. Spice scripting and simulation of the learned concept gives a more practical analysis of its characteritics. CMOS inverter circuits its design consideration is learned and simulated including its voltage transfer characteristics, static behaviour evaluation defining its robustness based on the 4 parameters viz switching threshold voltage (Vm), noise magin, power supply variation and device variation. Also the dynamic characteristics – propagation delay of the CMOS is learned and simulated. The importance of the transistor sizes while designing a CMOS inverter for a particular application is seen. All the above design consideration assist in finding the delay table and noise margin for different transistor sizes which can be compared with the actual values provided by the particular pdk. This workshop gives a detail understanding on the basic building block of the VLSI design – CMOS.
 
 
-# [Why do we need circuit design and spice simulation?](#circuit)
+![2_1](https://github.com/bharath19-gs/CMOS-Circuit-Design-and-SPICE-Simulation-using-32-28nm/blob/main/mos_images/nmos.png)
 
+```
+.param vds=1.8 vgs=1.8
+.option PARHIER = LOCAL
+.option PORT_VOLTAGE_SCALE_TO_2X = 1
+.option RUNLVL = 3
 
-Circuit design is basically the designing of the logic gates like and, or, nand, buffer or any other circuit using particular connection fashion and size of the pmos and nmos transistor for obtaining the required functionality of a particular circuit. Spice simulation on the other hand is required to fed in input waveform to the the circuit inorder to analyses the output. It also gives a very important table known as delay table which is base of crrosstalk, clock tree syntesis, sta, physical design etc. Without simulation the VLSI indusry has to face more challenges. An NMOS circuit and its spice deck is as shown below. .
+.option WDF=1
+.temp 25
+.lib 'saed32nm.lib' TT
 
-![2_1](https://user-images.githubusercontent.com/63381455/153574079-4f5b74e7-c21c-4fee-bca8-06c15718d3dd.png)
+*Custom Compiler Version S-2021.09-SP2
+*Sun Apr 17 10:53:39 2022
+
+.global gnd!
+********************************************************************************
+* Library          : mos_testing
+* Cell             : nmos4t_hvt_iv
+* View             : schematic
+* View Search List : hspice hspiceD schematic spice veriloga
+* View Stop List   : hspice hspiceD
+********************************************************************************
+xm0 net1 net4 gnd! gnd! n105_hvt w=0.1u l=0.03u nf=1 m=1
+v4 net7 gnd! dc='vgs'
+v1 net1 gnd! dc='vds'
+r3 net7 net4 r=1k
+
+.dc v4 0 1.8 .02
+.option opfile=1 split_dp=1
+.option probe=1
+.probe dc v(*) level=1
+.probe dc isub(xm0.1)
+
+.end
+```
 
 # [NMOS- Basic element in circuit design](#NMOS)
 
@@ -181,6 +217,7 @@ Vin in 0 1.8V
 *simulation commands
 .op
 .dc Vin 0 1.8 0.1 Vdd 0 1.8 1.8
+
 
 
 *interactive interpretor command
