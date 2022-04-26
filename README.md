@@ -76,7 +76,7 @@ r3 net7 net4 r=1k
 
 The pictorial representation of an NMOS device with its various terminals is as shown in figure below. Is consist of the followng
 
-1. 4 terminal device - drain, gate, source, body
+1. 4 terminal device - drain(D), gate(G), source(S), body(B)
 2. Ptype substrate
 3. Consist of Isolation region (Si0<sub>2</sub>)
 4. n<sup>+</sup> drain and source terminal
