@@ -84,7 +84,7 @@ The pictorial representation of an NMOS device with its various terminals is as 
 6. PolySi or metal gate – drives the nmos
 
 
-![Nmos](https://user-images.githubusercontent.com/63381455/153582815-e7c5a70f-7b06-4ab4-8dac-e6cc8159161c.png)
+![Nmos](https://github.com/bharath19-gs/CMOS-Circuit-Design-and-SPICE-Simulation-using-32-28nm/blob/main/mos_images/MOSFET.jpg)
 
 # [Regions of operation of NMOS](#operation)
 
