@@ -138,8 +138,6 @@ Drift current for resistive mode of operation
 
 ![Dc_resistive](https://user-images.githubusercontent.com/63381455/153920475-554c6aa6-e093-438c-b25b-afd46d8f4541.JPG)
 
-![voltage_gradient](https://user-images.githubusercontent.com/63381455/153896100-ebfd3a42-608f-415d-ab59-ac7bb4cf8a9b.JPG)
-
 ## [Saturation region of operation](#sat)
 
 - When (Vgs - Vds) >= Vt, the transistor is said to be in saturation region
@@ -149,89 +147,103 @@ Drift current for resistive mode of operation
 
 ![sat](https://user-images.githubusercontent.com/63381455/154033086-00e2c735-9f3d-435c-b00b-92ed3135a661.JPG)
 
-The figure below shows the drain current of both linear and saturation region with varying Vds. The curve is obtain by the spice simualtion of an Nmos transistor.
+The figure below shows the drain current of both linear and saturation region with varying Vds. 
 
-![IdVds](https://user-images.githubusercontent.com/63381455/154033661-8f20fdbc-56b8-422e-942d-5015f28c781f.JPG)
+![IdVds](https://github.com/bharath19-gs/CMOS-Circuit-Design-and-SPICE-Simulation-using-32-28nm/blob/main/mos_images/operating_regions.png)
 
-***The threshold voltage Vt, body coefficient  γ, process trans conductance  and channel length modulation are all technology constants know as spice model parameters, provided by the foundry depending on the process node.***
 
-# [Introduction to spice](#spice)
+# MOS simulations
 
-Spice simualation as required to represent a given circuit in a standard format for its analysis and execution. As mentioned earlier through spice simulation input waveform can be fed into the circuit for the analysis of the output. A number of spice tools are available for creating a spice deck, in our case ngspice is used. There are four basic section required for creating a spice deck of a circuit
+## NMOS transistor characteristics  
 
-- Netlist decription: Obtain from the given circuit - Define input and output node, name nodes component connectivity, component values
-- Including technology file: The technology file of any process node is provided by the foundry, contains information of all the parameters required in execution of spice deck
-- Simulation commands: Required Simulation/operation to be executed
-- Control commands: The display or execution of the required output
-
-## Programs on NMOS transistor characteristics  
-
-The following set of programs are wriiten to generate the ID-VDs, ID-Vgs curve of different transistor sizes using sky130 TT corner. 
+The following set of programs are wriiten to generate the ID-VDs, ID-Vgs curve of different transistor sizes using SAED-32/28nm  TT corner. 
 
 1a. [Spice deck for w=5u L=2u and generate ID-VDS graph](#deck1)
 ```bash
 Spice deck to generate the ID-Vds curve of a NMOS transistor using sky130 technology 
 *Model Description
-.param temp=27
 
-*Include model file
-.lib "../sky130_fd_pr/models/sky130.lib.spice" tt
+.option search='/home/skandha/Tools_SNPS/Downloads_temp/SAED32nm_PDK_09302020/hspice'
 
-*Netlist Description
-XM1 Vdd n1 0 0 sky130_fd_pr__nfet_01v8 w=5 l=2
-R1 n1 in 55
-Vdd vdd 0 1.8V
-Vin in 0 1.8V
+.param vds=1.8 vgs=1.8
+.option PARHIER = LOCAL
+.option PORT_VOLTAGE_SCALE_TO_2X = 1
+.option RUNLVL = 3
 
-*simulation commands
-.op
-.dc Vdd 0 1.8 0.1 Vin 0 1.8 0.2
+.option WDF=1
+.temp 25
+.lib 'saed32nm.lib' TT
 
-*interactive interpretor command
-.control
-run
-display
-setplot dc1
-plot -Vdd#branch
-.endc
+*Custom Compiler Version S-2021.09-SP2
+*Sat Apr 30 02:31:39 2022
+
+.global gnd!
+********************************************************************************
+* Library          : mos_testing
+* Cell             : nmos4t_hvt_iv
+* View             : schematic
+* View Search List : hspice hspiceD schematic spice veriloga
+* View Stop List   : hspice hspiceD
+********************************************************************************
+xm0 net1 net4 gnd! gnd! n105_hvt w=0.2u l=0.1u nf=1 m=1
+v4 net7 gnd! dc='vgs'
+v1 net1 gnd! dc='vds'
+r3 net7 net4 r=1k
+
+.dc vds 0 1.8 .02
+.option opfile=1 split_dp=1
+.option probe=1
+.probe dc v(*) level=1
+.probe dc isub(xm0.1)
+
 .end
+
 ```
 
-![01_IDVds_wF](https://user-images.githubusercontent.com/63381455/154209162-8fba7068-4f66-45e9-b4c0-52d7162710da.png)
+![01_IDVds_wF](https://github.com/bharath19-gs/CMOS-Circuit-Design-and-SPICE-Simulation-using-32-28nm/blob/main/mos_images/nmos_id_vs_vds_higher.png)
 
-1b. [Spice deck for w=5u L=2u to generate Id-Vgs curve](#deck3)
+1b. [Spice deck for w=1u L=0.5u to generate Id-Vgs curve](#deck3)
 
 ```bash
 *Model Description
-.param temp=27
+option search='/home/skandha/Tools_SNPS/Downloads_temp/SAED32nm_PDK_09302020/hspice'
 
-*Include model file
-.lib "../sky130_fd_pr/models/sky130.lib.spice" tt
+.param vds=1.8 vgs=1.8
+.option PARHIER = LOCAL
+.option PORT_VOLTAGE_SCALE_TO_2X = 1
+.option RUNLVL = 3
 
-*Netlist Description
-XM1 Vdd n1 0 0 sky130_fd_pr__nfet_01v8 w=5 l=2
-R1 n1 in 55
-Vdd vdd 0 1.8V
-Vin in 0 1.8V
+.option WDF=1
+.temp 25
+.lib 'saed32nm.lib' TT
 
-*simulation commands
-.op
-.dc Vin 0 1.8 0.1 Vdd 0 1.8 1.8
+*Custom Compiler Version S-2021.09-SP2
+*Sat Apr 30 02:17:42 2022
 
+.global gnd!
+********************************************************************************
+* Library          : mos_testing
+* Cell             : nmos4t_hvt_iv
+* View             : schematic
+* View Search List : hspice hspiceD schematic spice veriloga
+* View Stop List   : hspice hspiceD
+********************************************************************************
+xm0 net1 net4 gnd! gnd! n105_hvt w=1u l=0.5u nf=1 m=1
+v4 net7 gnd! dc='vgs'
+v1 net1 gnd! dc='vds'
+r3 net7 net4 r=1k
 
+.dc vgs 0 1.8 .02
+.option opfile=1 split_dp=1
+.option probe=1
+.probe dc v(*) level=1
+.probe dc isub(xm0.1)
 
-*interactive interpretor command
-.control
-run
-display
-setplot dc1
-plot -Vdd#branch
-.endc
 .end
 
 ```
 
-![01_IDVgs_quadratic](https://user-images.githubusercontent.com/63381455/154209289-48fdef8b-a5a4-4a9e-a550-d3ccbbf521f2.png)
+![01_IDVgs_quadratic](https://github.com/bharath19-gs/CMOS-Circuit-Design-and-SPICE-Simulation-using-32-28nm/blob/main/mos_images/nmos_id_vs_vgs_wL_higher.png)
 
 # [Velocity saturation effect](#vel)
 
@@ -251,71 +263,95 @@ Let us now see the effect of velocity saturation on the drain current equation.
 
 The below program shows the effect of velocity saturation on the lower node devices
 
-2a. [Spice deck for w=0.39u L=0.15u and generate ID-VDS graph](#deck2)
+2a. [Spice deck for w=0.1u L=0.05u and generate ID-VDS graph](#deck2)
 
 ```bash
 Spice deck for w=0.39u L=0.15u and generate ID-VDS graph
 
 *Model description
-.param temp = 27 
+.option search='/home/skandha/Tools_SNPS/Downloads_temp/SAED32nm_PDK_09302020/hspice'
 
-*Netlist description
-XM1 Vdd n1 0 0 sky130_fd_pr__nfet_01v8 W =0.39 L = 0.15 
-R1 in n1 55      
-Vin in 0 1.8V    
-Vdd Vdd 0 1.8V   
+.param vds=1.8 vgs=1.8
+.option PARHIER = LOCAL
+.option PORT_VOLTAGE_SCALE_TO_2X = 1
+.option RUNLVL = 3
 
-*include model file
-.lib "../sky130_fd_pr/models/sky130.lib.spice" tt
+.option WDF=1
+.temp 25
+.lib 'saed32nm.lib' TT
 
-*Simulation commands
-.op  
-.dc Vdd 0 1.8 0.1 Vin 0 1.8 0.2 
+*Custom Compiler Version S-2021.09-SP2
+*Sat Apr 30 02:35:52 2022
 
-*interactive interpretor command
-.control
-run    
-display  
-setplot dc1
-plot -Vdd#branch  
-.endc
+.global gnd!
+********************************************************************************
+* Library          : mos_testing
+* Cell             : nmos4t_hvt_iv
+* View             : schematic
+* View Search List : hspice hspiceD schematic spice veriloga
+* View Stop List   : hspice hspiceD
+********************************************************************************
+xm0 net1 net4 gnd! gnd! n105_hvt w=0.1u l=0.05u nf=1 m=1
+v4 net7 gnd! dc='vgs'
+v1 net1 gnd! dc='vds'
+r3 net7 net4 r=1k
+
+.dc vds 0 1.8 .02
+.option opfile=1 split_dp=1
+.option probe=1
+.probe dc v(*) level=1
+.probe dc isub(xm0.1)
+
 .end
+
 ```
-![02_IDVds_0 39_w015l_wf](https://user-images.githubusercontent.com/63381455/154209554-c227f4ef-2d4d-4b16-b4fc-bb521716851b.png)
+![02_IDVds_0 39_w015l_wf](https://github.com/bharath19-gs/CMOS-Circuit-Design-and-SPICE-Simulation-using-32-28nm/blob/main/mos_images/nmos_id_vs_vds_lower.png)
 
 
-2b. [Spice deck for w=0.39u and l=0.15u to generate Id-Vgs curve](#deck4)
+2b. [Spice deck for w=0.1u and l=0.05u to generate Id-Vgs curve](#deck4)
 
 ```bash
 Spice deck for w=0.39u and l=0.15u to generate Id-Vgs curve
 
 *Model description
-.param temp = 27
+.option search='/home/skandha/Tools_SNPS/Downloads_temp/SAED32nm_PDK_09302020/hspice'
 
-*Netlist description
-XM1 Vdd n1 0 0 sky130_fd_pr__nfet_01v8 W =0.39 L = 0.15 
-R1 in n1 55      
-Vin in 0 1.8V    
-Vdd Vdd 0 1.8V   
+.param vds=1.8 vgs=1.8
+.option PARHIER = LOCAL
+.option PORT_VOLTAGE_SCALE_TO_2X = 1
+.option RUNLVL = 3
 
-*include model file
-.lib "../sky130_fd_pr/models/sky130.lib.spice" tt
+.option WDF=1
+.temp 25
+.lib 'saed32nm.lib' TT
 
-*Simulation commands
-.op  
-.dc Vin 0 1.8 0.1 
+*Custom Compiler Version S-2021.09-SP2
+*Sat Apr 30 02:24:33 2022
 
-*interactive interpretor command
-.control
-run    
-display  
-setplot dc1
-plot -Vdd#branch  
-.endc
+.global gnd!
+********************************************************************************
+* Library          : mos_testing
+* Cell             : nmos4t_hvt_iv
+* View             : schematic
+* View Search List : hspice hspiceD schematic spice veriloga
+* View Stop List   : hspice hspiceD
+********************************************************************************
+xm0 net1 net4 gnd! gnd! n105_hvt w=0.1u l=0.05u nf=1 m=1
+v4 net7 gnd! dc='vgs'
+v1 net1 gnd! dc='vds'
+r3 net7 net4 r=1k
+
+.dc vgs 0 1.8 .02
+.option opfile=1 split_dp=1
+.option probe=1
+.probe dc v(*) level=1
+.probe dc isub(xm0.1)
+
 .end
+
 ```
 
-![02_IDVgs_0 39_w015l_wf](https://user-images.githubusercontent.com/63381455/154209884-c21b123f-a3d0-4203-ad6d-4ed78d9a92e2.png)
+![02_IDVgs_0 39_w015l_wf](https://github.com/bharath19-gs/CMOS-Circuit-Design-and-SPICE-Simulation-using-32-28nm/blob/main/mos_images/nmos_id_vs_vgs_wL_lower.png)
 
 # CMOS 
 
